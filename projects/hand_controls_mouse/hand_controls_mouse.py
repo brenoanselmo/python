@@ -4,6 +4,11 @@ import mediapipe as mp
 import math
 import pyautogui
 
+def mudar_resolucao(cap, largura, altura):
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, largura)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, altura)
+
+
 # --- Inicializa o módulo MediaPipe Hands --- #
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands()
@@ -14,7 +19,7 @@ mp_drawing = mp.solutions.drawing_utils
 # --- controle de tempo por gesto --- #
 click_start_time = None
 click_times = []
-click_cooldown = 0.05
+click_cooldown = 0.5
 scroll_mode = False
 freeze_cursor = False
 
@@ -24,6 +29,7 @@ prev_screen_x, prev_screen_y = 0,0
 # --- Abre um objeto de captura de vídeo (0 para a câmera padrão) --- #
 # --- Caso tenha uma segunda câmera, use 1, e assim por diante --- #
 cap = cv2.VideoCapture(0)
+mudar_resolucao(cap, 800, 600)
 if not cap.isOpened():
     print("Cannot open camera")
     exit()
@@ -85,12 +91,12 @@ while cap.isOpened():
         if not freeze_cursor:
             screen_x= int(index_tip.x * screen_w)
             screen_y= int(index_tip.y * screen_h)
-            pyautogui.moveTo(screen_x, screen_y, duration=0.05)
+            pyautogui.moveTo(screen_x, screen_y, duration=0.001,tween=pyautogui.easeInOutQuad)
             prev_screen_x, prev_screen_y = screen_x, screen_y
 
     # --- Exibe o quadro com os pontos de referência das mãos --- #
     # --- Para ocultar a captura do vídeo, comente a linha abaixo --- #
-    #cv2.imshow("Reconhecimento de Mãos", frame)
+    cv2.imshow("Reconhecimento de Mãos", frame)
     # --- Variável para capturar a tecla pressionada --- #
     key = cv2.waitKey(10)
     # --- Sai quando a tecla 'esc' for pressionado --- #
